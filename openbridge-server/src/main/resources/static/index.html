@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spring IM OpenClaw 联调台</title>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --ink: #1f2a2e;
+        --muted: #6a746e;
+        --card: #fffaf1;
+        --line: #d8cbb8;
+        --accent: #0f766e;
+        --accent-2: #d97706;
+        --ok: #15803d;
+        --bad: #b91c1c;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 15% 15%, #ffe8b8 0, transparent 28rem),
+          radial-gradient(circle at 85% 10%, #b7eee6 0, transparent 24rem),
+          linear-gradient(135deg, var(--bg), #eef6ed);
+        color: var(--ink);
+        min-height: 100vh;
+      }
+      main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0; }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+      .panel {
+        background: color-mix(in srgb, var(--card) 92%, white);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: 0 24px 80px rgba(42, 32, 14, 0.12);
+        padding: 24px;
+      }
+      h1 { margin: 0 0 12px; font-size: clamp(30px, 5vw, 58px); line-height: 1.02; letter-spacing: -0.04em; }
+      h2 { margin: 0 0 16px; font-size: 22px; }
+      p { color: var(--muted); line-height: 1.7; }
+      .badge { display: inline-flex; gap: 8px; align-items: center; padding: 8px 12px; border-radius: 999px; background: #e7f8f4; color: #115e59; font-weight: 700; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+      label { display: grid; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
+      input, textarea, select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fffdf8;
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--ink);
+        outline: none;
+      }
+      textarea { min-height: 110px; resize: vertical; }
+      button {
+        border: 0;
+        border-radius: 16px;
+        background: var(--accent);
+        color: white;
+        padding: 13px 18px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button.secondary { background: var(--accent-2); }
+      button:disabled { opacity: 0.55; cursor: wait; }
+      .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #1f2a2e;
+        color: #eaf7ef;
+        padding: 16px;
+        border-radius: 16px;
+        max-height: 380px;
+        overflow: auto;
+      }
+      .status { display: grid; gap: 10px; }
+      .status div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 10px; }
+      .ok { color: var(--ok); font-weight: 800; }
+      .bad { color: var(--bad); font-weight: 800; }
+      @media (max-width: 820px) {
+        .hero, .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="panel">
+          <span class="badge">OpenClaw Spring IM Demo</span>
+          <h1>本地联调台</h1>
+          <p>这个页面用于向 Spring Boot demo 写入模拟用户消息，然后查看 OpenClaw 插件是否通过 WebSocket/HTTP 回传回复。</p>
+          <div class="grid">
+            <label>Conversation ID
+              <input id="conversationId" value="conv-browser-demo" />
+            </label>
+            <label>Client ID
+              <input id="clientId" value="openclaw-home-01" />
+            </label>
+            <label>Sender ID
+              <input id="senderId" value="browser-user-001" />
+            </label>
+            <label>Conversation Type
+              <select id="conversationType">
+                <option value="direct">direct</option>
+                <option value="group">group</option>
+              </select>
+            </label>
+          </div>
+          <label style="margin-top:16px">Message
+            <textarea id="text">browser integration test</textarea>
+          </label>
+          <div class="actions">
+            <button id="send">发送测试消息</button>
+            <button id="refresh" class="secondary">刷新会话</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>服务状态</h2>
+          <div class="status">
+            <div><span>Spring Boot</span><span id="health">checking...</span></div>
+            <div><span>目标接口</span><span>/api/im/conversations</span></div>
+            <div><span>OpenClaw 通道</span><span>spring-im</span></div>
+          </div>
+          <p>如果回复没有出现，请先确认 OpenClaw Gateway 正在运行，并且 spring-im 已连接到 WebSocket。</p>
+        </div>
+      </section>
+      <section class="panel" style="margin-top:24px">
+        <h2>会话结果</h2>
+        <pre id="output">等待操作...</pre>
+      </section>
+    </main>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const output = $("output");
+
+      async function checkHealth() {
+        try {
+          const res = await fetch("/actuator/health");
+          const json = await res.json();
+          $("health").textContent = json.status || "UNKNOWN";
+          $("health").className = json.status === "UP" ? "ok" : "bad";
+        } catch (err) {
+          $("health").textContent = String(err);
+          $("health").className = "bad";
+        }
+      }
+
+      function values() {
+        return {
+          conversationId: $("conversationId").value.trim(),
+          clientId: $("clientId").value.trim(),
+          conversationType: $("conversationType").value,
+          senderId: $("senderId").value.trim(),
+          senderName: "Browser Tester",
+          text: $("text").value.trim(),
+        };
+      }
+
+      async function refreshConversation() {
+        const v = values();
+        const res = await fetch(`/api/im/conversations/${encodeURIComponent(v.conversationId)}`);
+        const json = await res.json();
+        output.textContent = JSON.stringify(json, null, 2);
+        return json;
+      }
+
+      async function sendMessage() {
+        const button = $("send");
+        button.disabled = true;
+        try {
+          const v = values();
+          const res = await fetch(`/api/im/conversations/${encodeURIComponent(v.conversationId)}/messages`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              clientId: v.clientId,
+              conversationType: v.conversationType,
+              senderId: v.senderId,
+              senderName: v.senderName,
+              text: v.text,
+            }),
+          });
+          const sent = await res.json();
+          output.textContent = "已发送:\n" + JSON.stringify(sent, null, 2);
+          for (let i = 0; i < 20; i++) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const json = await refreshConversation();
+            if ((json.openClawReplies || []).length > 0) break;
+          }
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      $("send").addEventListener("click", sendMessage);
+      $("refresh").addEventListener("click", refreshConversation);
+      checkHealth();
+      refreshConversation().catch(() => {});
+    </script>
+  </body>
+</html>

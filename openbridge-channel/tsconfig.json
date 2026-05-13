@@ -1,0 +1,26 @@
+{
+    "compilerOptions":  {
+                            "target":  "ES2023",
+                            "module":  "NodeNext",
+                            "moduleResolution":  "NodeNext",
+                            "strict":  true,
+                            "lib":  [
+                                        "ES2023",
+                                        "DOM"
+                                    ],
+                            "types":  [
+                                          "node"
+                                      ],
+                            "skipLibCheck":  true,
+                            "declaration":  true,
+                            "outDir":  "./dist",
+                            "rootDir":  ".",
+                            "noEmit":  false,
+                            "verbatimModuleSyntax":  true
+                        },
+    "include":  [
+                    "index.ts",
+                    "setup-entry.ts",
+                    "src/**/*.ts"
+                ]
+}

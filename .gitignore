@@ -1,0 +1,93 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+target/
+*.tgz
+*.jar
+*.war
+
+# IDE (contains personal paths)
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Claude Code local settings
+.claude/settings.local.json
+.claude/projects/
+.claude/scheduled_tasks.json
+
+# OS
+.DS_Store
+Thumbs.log
+
+# Logs
+*.log
+logs/
+.npm-cache/
+*.err.log
+*.out.log
+
+# Local state (user-specific)
+.state/
+.openclaw-*/
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Test outputs
+test-results/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Compiled Java
+*.class
+
+# OS
+.DS_Store
+Thumbs.log
+
+# Logs
+*.log
+logs/
+.npm-cache/
+
+# Local state (user-specific)
+.state/
+.openclaw-*/
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Test outputs
+test-results/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Compiled Java
+*.class
+*.jar
+*.war
+
+# Maven
+.m2/

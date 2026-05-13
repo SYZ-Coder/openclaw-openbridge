@@ -1,0 +1,117 @@
+{
+  "$schema": "https://openclaw.ai/schemas/openclaw.plugin.schema.json",
+  "id": "openbridge",
+  "name": "OpenBridge Channel",
+  "version": "0.1.0",
+  "description": "OpenBridge IM channel adapter for a Spring Boot IM service.",
+  "channels": [
+    "openbridge"
+  ],
+  "channelEnvVars": {
+    "openbridge": [
+      "OPENBRIDGE_TOKEN",
+      "OPENBRIDGE_CLIENT_SECRET"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "channelConfigs": {
+    "openbridge": {
+      "label": "OpenBridge",
+      "description": "OpenClaw acts as an active local client; the cloud IM service remains the reliable message center.",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "baseUrl": { "type": "string" },
+          "websocketUrl": { "type": "string" },
+          "clientId": { "type": "string" },
+          "token": { "type": "string" },
+          "clientSecret": { "type": "string" },
+          "defaultTo": { "type": "string" },
+          "allowFrom": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "dmPolicy": {
+            "type": "string",
+            "enum": ["allowlist", "open"]
+          },
+          "reconnectMinMs": { "type": "number" },
+          "reconnectMaxMs": { "type": "number" },
+          "heartbeatMs": { "type": "number" },
+          "connectTimeoutMs": { "type": "number" },
+          "ackTimeoutMs": { "type": "number" },
+          "dispatchTimeoutMs": { "type": "number" },
+          "stateDir": { "type": "string" },
+          "replyOverWebSocket": { "type": "boolean" },
+          "demoEchoReply": { "type": "boolean" },
+          "accounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "baseUrl": { "type": "string" },
+                "websocketUrl": { "type": "string" },
+                "clientId": { "type": "string" },
+                "token": { "type": "string" },
+                "clientSecret": { "type": "string" },
+                "defaultTo": { "type": "string" },
+                "allowFrom": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "dmPolicy": {
+                  "type": "string",
+                  "enum": ["allowlist", "open"]
+                },
+                "reconnectMinMs": { "type": "number" },
+                "reconnectMaxMs": { "type": "number" },
+                "heartbeatMs": { "type": "number" },
+                "connectTimeoutMs": { "type": "number" },
+                "ackTimeoutMs": { "type": "number" },
+                "dispatchTimeoutMs": { "type": "number" },
+                "stateDir": { "type": "string" },
+                "replyOverWebSocket": { "type": "boolean" },
+                "demoEchoReply": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      },
+      "uiHints": {
+        "baseUrl": {
+          "label": "OpenBridge base URL",
+          "placeholder": "https://im.example.com"
+        },
+        "clientId": {
+          "label": "Client ID",
+          "placeholder": "demo-client-01"
+        },
+        "token": {
+          "label": "Token",
+          "sensitive": true
+        },
+        "clientSecret": {
+          "label": "Client secret",
+          "sensitive": true
+        },
+        "stateDir": {
+          "label": "State directory"
+        },
+        "replyOverWebSocket": {
+          "label": "Reply over WebSocket"
+        },
+        "demoEchoReply": {
+          "label": "Demo echo reply"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "@openclaw/openbridge-channel",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "OpenBridge IM channel plugin for OpenClaw gateway.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/openclaw-openbridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openclaw/openclaw-openbridge/issues"
+  },
+  "homepage": "https://github.com/openclaw/openclaw-openbridge#readme",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "doc",
+    "README.md",
+    "openclaw.plugin.json"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "setupEntry": "./dist/setup-entry.js",
+    "channel": {
+      "id": "openbridge",
+      "label": "OpenBridge",
+      "blurb": "Connect OpenClaw to a Spring Boot IM service.",
+      "docsPath": "doc/openbridge-channel-design.md",
+      "docsLabel": "OpenBridge channel design"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "@types/node": "^25.6.0",
+    "typescript": "^5.8.0"
+  }
+}

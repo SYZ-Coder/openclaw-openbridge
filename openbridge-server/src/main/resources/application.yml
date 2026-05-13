@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+openclaw:
+  bridge:
+    default-client-id: openbridge-demo-client
+    # Persistent storage directory (customize for your environment)
+    # storage-dir: ~/.openclaw-spring-im-demo
+    # storage-dir: C:/Users/your-user/.openclaw-spring-im-demo
+    storage-dir: ${user.home}/.openclaw-spring-im-demo
+    # Database configuration
+    database:
+      # SQLite database path (default: storage-dir/openclaw.db)
+      path: ${openclaw.bridge.storage-dir}/openclaw.db
+      maximum-pool-size: 5
+      minimum-idle: 1
+    # Multi-instance configuration
+    instance:
+      # Instance identifier (auto-generated if not set)
+      id: ${HOSTNAME:local}
+      heartbeat-interval: 30
+      session-timeout: 60
+      lock-timeout: 30
+    # Client authentication configuration
+    # IMPORTANT: Change these tokens before production use!
+    clients:
+      openclaw-demo-client:
+        # Replace with your own secure token
+        token: ${OPENBRIDGE_TOKEN:demo-token-change-me}
+        # Optional. If configured, HTTP requests from the plugin must include
+        # x-openclaw-signature = HMAC_SHA256(timestamp.requestId.body).
+        client-secret: ${OPENBRIDGE_CLIENT_SECRET:}
