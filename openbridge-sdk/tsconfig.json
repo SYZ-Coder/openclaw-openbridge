@@ -7,9 +7,12 @@
     "lib": ["ES2023", "DOM"],
     "types": ["node"],
     "skipLibCheck": true,
-    "noEmit": true,
-    "verbatimModuleSyntax": true,
-    "allowImportingTsExtensions": true
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*.ts"]
 }
